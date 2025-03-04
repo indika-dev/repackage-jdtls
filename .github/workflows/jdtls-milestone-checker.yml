@@ -1,3 +1,4 @@
+---
 name: JDTLS Milestone Release Checker
 
 on:
@@ -26,6 +27,7 @@ jobs:
     env:
       JDTLS_VERSION: ${{ github.event.inputs.JDTLS_VERSION }}
       FORCE_REPACKAGE: ${{ github.event.inputs.FORCE_REPACKAGE }}
+      GITHUB_TOKEN: ${{ secrets.PMR_TOKEN }}
     runs-on: ubuntu-latest
 
     steps:
@@ -40,8 +42,6 @@ jobs:
 
       - name: Check if latest version has been released
         if: env.FORCE_REPACKAGE == 'false'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Fetching releases for repository..."
           releases=$(curl -H "Authorization: Bearer $GITHUB_TOKEN" \
@@ -60,6 +60,7 @@ jobs:
           pip install requests
           python ./repackage.py
           ls
+          echo "RELEASE_DEPLOYED=true" >> $GITHUB_ENV
 
       - name: Debug
         run: |
@@ -73,3 +74,72 @@ jobs:
           make_latest: "${{ github.event_name == 'scheduled' && 'true' || 'false' }}"
           name: "${{env.JDTLS_VERSION}}"
           tag_name: "${{env.JDTLS_VERSION}}"
+
+      - name: deploy in personal mason registry
+        if: env.RELEASE_DEPLOYED == "true"
+        run: |
+
+          git clone https://github.com/indika-dev/personal-mason-registry
+
+          cd personal-mason-registry
+          git config user.name "GHA Deploy in PMR"
+          git config user.email "56093026+indika-dev@users.noreply.github.com"
+
+          # git checkout -b api-version-$COMMIT
+          cat >packages/jdtls/package.yaml <<EOF
+          name: jdtls
+          description: Java language server.
+          homepage: https://github.com/eclipse/eclipse.jdt.ls
+          licenses:
+            - EPL-2.0
+          languages:
+            - Java
+          categories:
+            - LSP
+
+          source:
+            # renovate:datasource=github-tags
+            id: pkg:generic/eclipse/eclipse.jdt.ls@v${{env.JDTLS_VERSION}}
+            download:
+              - target: [darwin_x64, darwin_arm64]
+                files:
+                  jdtls.tar.gz: https://github.com/indika-dev/repackage-jdtls/releases/download/{{ version | strip_prefix "v" }}/jdtls.tar.gz
+                  lombok.jar: https://projectlombok.org/downloads/lombok.jar
+                config: config_mac/
+
+              - target: [linux_x64, linux_x86]
+                files:
+                  jdtls.tar.gz: https://github.com/indika-dev/repackage-jdtls/releases/download/{{ version | strip_prefix "v" }}/jdtls.tar.gz
+                  lombok.jar: https://projectlombok.org/downloads/lombok.jar
+                config: config_linux/
+
+              - target: linux_arm64
+                files:
+                  jdtls.tar.gz: https://github.com/indika-dev/repackage-jdtls/releases/download/{{ version | strip_prefix "v" }}/jdtls.tar.gz
+                  lombok.jar: https://projectlombok.org/downloads/lombok.jar
+                config: config_linux_arm/
+
+              - target: win
+                files:
+                  jdtls.tar.gz: https://github.com/indika-dev/repackage-jdtls/releases/download/{{ version | strip_prefix "v" }}/jdtls.tar.gz
+                  lombok.jar: https://projectlombok.org/downloads/lombok.jar
+                config: config_win/
+
+          schemas:
+            lsp: vscode:https://raw.githubusercontent.com/redhat-developer/vscode-java/master/package.json
+
+          bin:
+            jdtls: python:bin/jdtls
+
+          share:
+            jdtls/lombok.jar: lombok.jar
+            jdtls/plugins/: plugins/
+            jdtls/plugins/org.eclipse.equinox.launcher.jar: plugins/org.eclipse.equinox.launcher.jar
+            jdtls/config/: "{{source.download.config}}"
+          EOF
+          git add packages/jdtls/package.json
+          git commit -m "bump jdtls -> ${{env.JDTLS_VERSION}}"
+
+          git remote -v
+          git config --unset-all http.https://github.com/.extraheader
+          git push
