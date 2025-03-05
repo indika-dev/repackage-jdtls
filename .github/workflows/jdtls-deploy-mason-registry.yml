@@ -44,6 +44,8 @@ jobs:
 
           git clone https://indika-dev:$GITHUB_TOKEN@github.com/indika-dev/personal-mason-registry.git
 
+          ls -alR
+
           cd  personal-mason-registry
           git config user.name "GHA Deploy in PMR"
           git config user.email "56093026+indika-dev@users.noreply.github.com"
