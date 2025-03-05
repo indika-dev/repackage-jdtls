@@ -45,7 +45,7 @@ jobs:
           echo "JDTLS_VERSION=$(python ./get_latest.py)" >> $GITHUB_ENV
 
       - name: deploy in personal mason registry
-        if: env.RELEASE_DEPLOYED != ''
+        if: env.JDTLS_VERSION != ''
         env:
           GITHUB_TOKEN: ${{ secrets.PMR_TOKEN }}
         run: |
