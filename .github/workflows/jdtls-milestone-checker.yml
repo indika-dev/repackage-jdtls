@@ -76,7 +76,7 @@ jobs:
           tag_name: "${{env.JDTLS_VERSION}}"
 
       - name: deploy in personal mason registry
-        if: env.RELEASE_DEPLOYED == 'true'
+        if: env.RELEASE_DEPLOYED != 'true'
         run: |
 
           git clone https://github.com/indika-dev/personal-mason-registry
