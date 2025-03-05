@@ -28,15 +28,16 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Checkout personal mason registry
         env:
           GITHUB_TOKEN: ${{ secrets.PMR_TOKEN }}
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: indika-dev/personal-mason-registry
-          path: ./personal-mason-registry
+          path: personal-mason-registry
+          token: ${{ secrets.PMR_TOKEN }}
 
       - name: Set the latest jdtls version
         if: env.JDTLS_VERSION == ''
