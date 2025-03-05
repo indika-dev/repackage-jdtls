@@ -50,7 +50,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PMR_TOKEN }}
         run: |
 
-          cd ./personal-mason-registry
+          cd  /home/runner/work/repackage-jdtls/repackage-jdtls/personal-mason-registry
           git config user.name "GHA Deploy in PMR"
           git config user.email "56093026+indika-dev@users.noreply.github.com"
 
