@@ -42,7 +42,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PMR_TOKEN }}
         run: |
 
-          git clone https://indika-dev:$GITHUB_TOKEN@github.com/indika-dev/repackage-jdtls.git
+          git clone https://indika-dev:$GITHUB_TOKEN@github.com/indika-dev/personal-mason-registry.git
 
           cd  personal-mason-registry
           git config user.name "GHA Deploy in PMR"
@@ -105,4 +105,4 @@ jobs:
 
           git remote -v
           git config --unset-all http.https://github.com/.extraheader
-          git push --set-upstream https://indika-dev:$GITHUB_TOKEN@github.com/indika-dev/repackage-jdtls.git
+          git push --set-upstream https://indika-dev:$GITHUB_TOKEN@github.com/indika-dev/personal-mason-registry
