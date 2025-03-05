@@ -30,14 +30,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Checkout personal mason registry
-        env:
-          GITHUB_TOKEN: ${{ secrets.PMR_TOKEN }}
-        uses: actions/checkout@v4
-        with:
-          repository: indika-dev/personal-mason-registry
-          path: personal-mason-registry
-
       - name: Set the latest jdtls version
         if: env.JDTLS_VERSION == ''
         run: |
@@ -50,12 +42,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PMR_TOKEN }}
         run: |
 
-          cd  /home/runner/work/repackage-jdtls/repackage-jdtls/personal-mason-registry
+          git clone https://indika-dev:$GITHUB_TOKEN@github.com/indika-dev/repackage-jdtls.git
+
+          cd  personal-mason-registry
           git config user.name "GHA Deploy in PMR"
           git config user.email "56093026+indika-dev@users.noreply.github.com"
 
           # git checkout -b api-version-$COMMIT
-          cat >/home/runner/work/repackage-jdtls/repackage-jdtls/personal-mason-registry/packages/jdtls/package.yaml <<EOF
+          cat >packages/jdtls/package.yaml <<EOF
           name: jdtls
           description: Java language server.
           homepage: https://github.com/eclipse/eclipse.jdt.ls
@@ -106,9 +100,9 @@ jobs:
             jdtls/plugins/org.eclipse.equinox.launcher.jar: plugins/org.eclipse.equinox.launcher.jar
             jdtls/config/: "{{source.download.config}}"
           EOF
-          git add /home/runner/work/repackage-jdtls/repackage-jdtls/personal-mason-registry/packages/jdtls/package.json
+          git add packages/jdtls/package.json
           git commit -m "bump jdtls -> ${{env.JDTLS_VERSION}}"
 
           git remote -v
           git config --unset-all http.https://github.com/.extraheader
-          git push
+          git push --set-upstream https://indika-dev:$GITHUB_TOKEN@github.com/indika-dev/repackage-jdtls.git
