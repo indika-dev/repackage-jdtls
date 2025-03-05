@@ -19,7 +19,7 @@ permissions:
   contents: write
 
 jobs:
-  check-and-release:
+  check-and-deploy:
     env:
       JDTLS_VERSION: ${{ github.event.inputs.JDTLS_VERSION }}
       FORCE_REPACKAGE: ${{ github.event.inputs.FORCE_REPACKAGE }}
@@ -29,6 +29,14 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
+      - name: Checkout personal mason registry
+        env:
+          GITHUB_TOKEN: ${{ secrets.PMR_TOKEN }}
+        uses: actions/checkout@v3
+        with:
+          repository: indika-dev/personal-mason-registry
+          path: ./personal-mason-registry
 
       - name: Set the latest jdtls version
         if: env.JDTLS_VERSION == ''
@@ -40,10 +48,6 @@ jobs:
         if: env.RELEASE_DEPLOYED != ''
         env:
           GITHUB_TOKEN: ${{ secrets.PMR_TOKEN }}
-        uses: actions/checkout@v3
-        with:
-          repository: indika-dev/personal-mason-registry
-          path: ./personal-mason-registry
         run: |
 
           cd ./personal-mason-registry
