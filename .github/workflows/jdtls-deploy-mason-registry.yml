@@ -55,7 +55,7 @@ jobs:
           git config user.email "56093026+indika-dev@users.noreply.github.com"
 
           # git checkout -b api-version-$COMMIT
-          cat >packages/jdtls/package.yaml <<EOF
+          cat >./packages/jdtls/package.yaml <<EOF
           name: jdtls
           description: Java language server.
           homepage: https://github.com/eclipse/eclipse.jdt.ls
@@ -106,7 +106,7 @@ jobs:
             jdtls/plugins/org.eclipse.equinox.launcher.jar: plugins/org.eclipse.equinox.launcher.jar
             jdtls/config/: "{{source.download.config}}"
           EOF
-          git add packages/jdtls/package.json
+          git add ./packages/jdtls/package.json
           git commit -m "bump jdtls -> ${{env.JDTLS_VERSION}}"
 
           git remote -v
