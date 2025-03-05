@@ -32,12 +32,11 @@ jobs:
 
       - name: Checkout personal mason registry
         env:
-          GITHUB_TOKEN: ${{ env.PMR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PMR_TOKEN }}
         uses: actions/checkout@v4
         with:
           repository: indika-dev/personal-mason-registry
           path: personal-mason-registry
-          token: ${{ env.PMR_TOKEN }}
 
       - name: Set the latest jdtls version
         if: env.JDTLS_VERSION == ''
@@ -48,7 +47,7 @@ jobs:
       - name: deploy in personal mason registry
         if: env.JDTLS_VERSION != ''
         env:
-          GITHUB_TOKEN: ${{ env.PMR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PMR_TOKEN }}
         run: |
 
           cd  /home/runner/work/repackage-jdtls/repackage-jdtls/personal-mason-registry
