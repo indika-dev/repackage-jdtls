@@ -39,7 +39,7 @@ jobs:
       - name: deploy in personal mason registry
         if: env.JDTLS_VERSION != ''
         env:
-          GITHUB_TOKEN: ${{ secrets.PMR_TOKEN }}
+          GITHUB_TOKEN: ${{ env.PMR_TOKEN }}
         run: |
 
           git clone https://indika-dev:$GITHUB_TOKEN@github.com/indika-dev/personal-mason-registry.git
@@ -48,7 +48,7 @@ jobs:
           echo $PWD
           git config user.name "GHA Deploy in PMR"
           git config user.email "56093026+indika-dev@users.noreply.github.com"
-          git remote set-url --push origin https://indika-dev:${{ secrets.PMR_TOKEN }}@github.com/indika-dev/personal-mason-registry.git
+          git remote set-url --push origin https://indika-dev:${{ env.PMR_TOKEN }}@github.com/indika-dev/personal-mason-registry.git
           git config --list
 
           # git checkout -b api-version-$COMMIT
