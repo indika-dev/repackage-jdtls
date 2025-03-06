@@ -103,4 +103,6 @@ jobs:
           if ! git diff-index --quiet HEAD; then
             git commit -m "bump jdtls -> ${{env.JDTLS_VERSION}}"
             git push
+          else
+            echo "No changes to commit"
           fi
