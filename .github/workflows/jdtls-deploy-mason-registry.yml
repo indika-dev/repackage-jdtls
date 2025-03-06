@@ -98,8 +98,9 @@ jobs:
             jdtls/plugins/org.eclipse.equinox.launcher.jar: plugins/org.eclipse.equinox.launcher.jar
             jdtls/config/: "{{source.download.config}}"
           EOF
-          git add packages/jdtls/package.yaml
-          git commit -m "bump jdtls -> ${{env.JDTLS_VERSION}}"
 
-          git remote -v
-          git push
+          git add -A
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "bump jdtls -> ${{env.JDTLS_VERSION}}"
+            git push
+          fi
