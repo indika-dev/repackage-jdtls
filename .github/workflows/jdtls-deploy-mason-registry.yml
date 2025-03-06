@@ -47,7 +47,7 @@ jobs:
           cd  personal-mason-registry/
           echo $PWD
           git config user.name "GHA Deploy in PMR"
-          git config user.email "indika-dev@users.noreply.github.com"
+          git config user.email "56093026+indika-dev@users.noreply.github.com"
 
           # git checkout -b api-version-$COMMIT
           cat >./packages/jdtls/package.yaml <<EOF
