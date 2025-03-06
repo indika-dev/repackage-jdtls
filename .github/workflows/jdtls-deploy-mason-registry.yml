@@ -105,6 +105,9 @@ jobs:
           git commit -m "bump jdtls -> ${{env.JDTLS_VERSION}}"
 
           git remote -v
+          echo setting config
           git config --unset-all http.https://github.com/.extraheader
+          echo pushing
           git push -v
+          echo status
           git status
