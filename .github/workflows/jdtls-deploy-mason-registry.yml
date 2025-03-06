@@ -44,14 +44,14 @@ jobs:
 
           git clone https://indika-dev:$GITHUB_TOKEN@github.com/indika-dev/personal-mason-registry.git
 
-          ls -alR
+          ls
 
           cd  personal-mason-registry
           git config user.name "GHA Deploy in PMR"
           git config user.email "56093026+indika-dev@users.noreply.github.com"
 
           # git checkout -b api-version-$COMMIT
-          cat >personal-mason-registry/packages/jdtls/package.yaml <<EOF
+          cat >./packages/jdtls/package.yaml <<EOF
           name: jdtls
           description: Java language server.
           homepage: https://github.com/eclipse/eclipse.jdt.ls
