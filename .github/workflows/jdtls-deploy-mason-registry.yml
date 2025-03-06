@@ -48,7 +48,6 @@ jobs:
           echo $PWD
           git config user.name "GHA Deploy in PMR"
           git config user.email "indika-dev@users.noreply.github.com"
-          git remote set-url origin https://indika-dev:${{env.GITHUB_TOKEN}}@github.com/indika-dev/personal-mason-registry.git
 
           # git checkout -b api-version-$COMMIT
           cat >./packages/jdtls/package.yaml <<EOF
@@ -106,4 +105,4 @@ jobs:
           git commit -m "bump jdtls -> ${{env.JDTLS_VERSION}}"
 
           git remote -v
-          git push
+          git push --set-upstream https://indika-dev:${{env.GITHUB_TOKEN}}@github.com/indika-dev/personal-mason-registry.git
