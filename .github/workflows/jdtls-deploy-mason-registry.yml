@@ -45,6 +45,7 @@ jobs:
           git clone https://indika-dev:$GITHUB_TOKEN@github.com/indika-dev/personal-mason-registry.git
 
           cd  personal-mason-registry/
+          echo $PWD
           git config user.name "GHA Deploy in PMR"
           git config user.email "56093026+indika-dev@users.noreply.github.com"
 
@@ -106,3 +107,4 @@ jobs:
           git remote -v
           git config --unset-all http.https://github.com/.extraheader
           git push --set-upstream https://indika-dev:$GITHUB_TOKEN@github.com/indika-dev/personal-mason-registry
+          git status
