@@ -38,20 +38,15 @@ jobs:
 
       - name: deploy in personal mason registry
         if: env.JDTLS_VERSION != ''
-        env:
-          GITHUB_TOKEN: ${{ secrets.PMR_TOKEN }}
         run: |
 
-          git clone https://indika-dev:$GITHUB_TOKEN@github.com/indika-dev/personal-mason-registry.git
+          git clone https://indika-dev:${{ secrets.PMR_TOKEN }}@github.com/indika-dev/personal-mason-registry.git
 
           cd  personal-mason-registry/
-          echo $PWD
           git config user.name "GHA Deploy in PMR"
           git config user.email "56093026+indika-dev@users.noreply.github.com"
           git remote set-url --push origin https://indika-dev:${{ secrets.PMR_TOKEN }}@github.com/indika-dev/personal-mason-registry.git
-          git config --list
 
-          # git checkout -b api-version-$COMMIT
           cat >./packages/jdtls/package.yaml <<EOF
           name: jdtls
           description: Java language server.
