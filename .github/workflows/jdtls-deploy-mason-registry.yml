@@ -106,5 +106,5 @@ jobs:
 
           git remote -v
           git config --unset-all http.https://github.com/.extraheader
-          git push --set-upstream https://indika-dev:$GITHUB_TOKEN@github.com/indika-dev/personal-mason-registry
+          git push
           git status
