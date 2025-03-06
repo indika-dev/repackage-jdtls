@@ -48,7 +48,8 @@ jobs:
           echo $PWD
           git config user.name "GHA Deploy in PMR"
           git config user.email "56093026+indika-dev@users.noreply.github.com"
-          git config --unset http.https://github.com/.extraheader
+          git config --list
+          git config --unset "http.https://github.com/.extraheader"
           git remote set-url --push origin https://indika-dev:$GITHUB_TOKEN@github.com/indika-dev/personal-mason-registry
 
           # git checkout -b api-version-$COMMIT
