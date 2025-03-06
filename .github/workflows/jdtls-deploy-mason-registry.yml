@@ -105,4 +105,4 @@ jobs:
           git commit -m "bump jdtls -> ${{env.JDTLS_VERSION}}"
 
           git remote -v
-          git push --set-upstream https://indika-dev:${{env.GITHUB_TOKEN}}@github.com/indika-dev/personal-mason-registry.git
+          git push --set-upstream https://indika-dev:$GITHUB_TOKEN@github.com/indika-dev/personal-mason-registry.git
