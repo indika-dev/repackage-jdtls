@@ -1,5 +1,5 @@
 ---
-name: JDTLS Deploy in Personal Mason Registry
+name: SBT Deploy in Personal Mason Registry
 
 on:
   workflow_run:
