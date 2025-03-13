@@ -1,0 +1,83 @@
+---
+name: JDTLS Deploy in Personal Mason Registry
+
+on:
+  workflow_run:
+    workflows:
+      - JDTLS Milestone Release Checker
+    types:
+      - completed
+  workflow_dispatch:
+    inputs:
+      SBT_VERSION:
+        description: "spring boot tools version"
+        required: false
+      FORCE_REPACKAGE:
+        description: "Replace package already exists"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+jobs:
+  check-and-deploy:
+    env:
+      SBT_VERSION: ${{ github.event.inputs.SBT_VERSION }}
+      FORCE_REPACKAGE: ${{ github.event.inputs.FORCE_REPACKAGE }}
+      GITHUB_TOKEN: ${{ secrets.PMR_TOKEN }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set the latest SBT version
+        if: env.SBT_VERSION == ''
+        run: |
+          echo "SBT_VERSION=$(curl -s 'https://open-vsx.org/api/VMware/vscode-spring-boot/versions?size=1&offset=0' -H 'accept: application/json' | jq -r '.versions|to_entries[0].key')" >> $GITHUB_ENV
+
+      - name: deploy in personal mason registry
+        if: env.SBT_VERSION != ''
+        run: |
+
+          git clone https://indika-dev:${{ secrets.PMR_TOKEN }}@github.com/indika-dev/personal-mason-registry.git
+
+          cd  personal-mason-registry/
+          git config user.name "GHA Deploy in PMR"
+          git config user.email "56093026+indika-dev@users.noreply.github.com"
+          git remote set-url --push origin https://indika-dev:${{ secrets.PMR_TOKEN }}@github.com/indika-dev/personal-mason-registry.git
+
+          cat >./packages/vscode-spring-boot-tools/package.yaml <<EOF
+          name: vscode-spring-boot-tools
+          description: |
+            VS Code Language Server for Spring Boot
+            VSCode extension and Language Server providing support for working with Spring Boot application.properties, application.yml and .java files.
+
+            Note: this extension has a dependency on VS Code extension of Language Support for Java™ by Red Hat
+          homepage: https://github.com/spring-projects/sts4
+          licenses:
+            - EPL-1.0
+          languages:
+            - Java
+          categories:
+            - LSP
+
+          source:
+            id: pkg:openvsx/VMware/vscode-spring-boot@${{env.SBT_VERSION}}
+            download:
+              file: VMware.vscode-spring-boot-{{version}}.vsix
+
+          schemas:
+            lsp: vscode:https://raw.githubusercontent.com/spring-projects/sts4/master/vscode-extensions/vscode-spring-boot/package.json
+
+          share:
+            vscode-spring-boot-tools/jdtls/: extension/jars/
+            vscode-spring-boot-tools/language-server.jar: extension/language-server/spring-boot-language-server-{{version}}-SNAPSHOT-exec.jar
+          EOF
+
+          git add -A
+          if ! git diff-index --quiet HEAD; then
+          git commit -m "bump sbt -> ${{env.SBT_VERSION}}"
+          git push
+          else
+          echo "No changes to commit"
+          fi
