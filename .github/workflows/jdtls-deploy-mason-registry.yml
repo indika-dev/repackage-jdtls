@@ -33,11 +33,17 @@ jobs:
       - name: Set the latest jdtls version
         if: env.JDTLS_VERSION == ''
         run: |
-          pip install requests
-          echo "JDTLS_VERSION=$(python ./get_latest.py)" >> $GITHUB_ENV
+          echo "JDTLS_VERSION=$(curl -H 'Authorization: Bearer $GITHUB_TOKEN' \
+          -H 'Accept: application/vnd.github.v3+json' \
+          https://api.github.com/repos/${{ github.repository }}/releases) | jq -r '.[].tag_name'" >> $GITHUB_ENV
+
+      - name: Set the latest SBT version
+        if: env.SBT_VERSION = ''
+        run: |
+          echo "SBT_VERSION=$(curl -s 'https://open-vsx.org/api/VMware/vscode-spring-boot/versions?size=1&offset=0' -H 'accept: application/json' | jq -r '.versions|to_entries[0].key')" >> $GITHUB_ENV
 
       - name: deploy in personal mason registry
-        if: env.JDTLS_VERSION != ''
+        if: env.JDTLS_VERSION != '' && env.SBT_VERSION != ''
         run: |
 
           git clone https://indika-dev:${{ secrets.PMR_TOKEN }}@github.com/indika-dev/personal-mason-registry.git
@@ -99,10 +105,39 @@ jobs:
             jdtls/config/: "{{source.download.config}}"
           EOF
 
+
+          cat >./packages/vscode-spring-boot-tools/package.yaml <<EOF
+          name: vscode-spring-boot-tools
+          description: |
+            VS Code Language Server for Spring Boot
+            VSCode extension and Language Server providing support for working with Spring Boot application.properties, application.yml and .java files.
+
+            Note: this extension has a dependency on VS Code extension of Language Support for Java™ by Red Hat
+          homepage: https://github.com/spring-projects/sts4
+          licenses:
+            - EPL-1.0
+          languages:
+            - Java
+          categories:
+            - LSP
+
+          source:
+            id: pkg:openvsx/VMware/vscode-spring-boot@${{env.SBT_VERSION}}
+            download:
+              file: VMware.vscode-spring-boot-{{version}}.vsix
+
+          schemas:
+            lsp: vscode:https://raw.githubusercontent.com/spring-projects/sts4/master/vscode-extensions/vscode-spring-boot/package.json
+
+          share:
+            vscode-spring-boot-tools/jdtls/: extension/jars/
+            vscode-spring-boot-tools/language-server.jar: extension/language-server/spring-boot-language-server-{{version}}-SNAPSHOT-exec.jar
+          EOF
+
           git add -A
           if ! git diff-index --quiet HEAD; then
-            git commit -m "bump jdtls -> ${{env.JDTLS_VERSION}}"
-            git push
+          git commit -m "bump jdtls->${{env.JDTLS_VERSION}} sbt->${{env.SBT_VERSION}}"
+          git push
           else
-            echo "No changes to commit"
+          echo "No changes to commit"
           fi
