@@ -76,7 +76,7 @@ jobs:
 
           git add -A
           if ! git diff-index --quiet HEAD; then
-          git commit -m "bump sbt -> ${{env.SBT_VERSION}}"
+          git commit -m "bump(sbt): ${{env.SBT_VERSION}}"
           git push
           else
           echo "No changes to commit"
