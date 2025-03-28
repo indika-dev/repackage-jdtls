@@ -40,7 +40,7 @@ jobs:
           echo "JDTLS_VERSION=$(python ./get_latest.py)" >> $GITHUB_ENV
 
       - name: Check if latest version has been released
-        if: env.FORCE_REPACKAGE == 'false'
+        if: env.FORCE_REPACKAGE == 'false' || env.JDTLS_VERSION != ''
         run: |
           echo "Fetching releases for repository..."
           releases=$(curl -H "Authorization: Bearer $GITHUB_TOKEN" \
