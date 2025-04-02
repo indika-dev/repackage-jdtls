@@ -2,8 +2,10 @@
 name: JDTLS Deploy in Personal Mason Registry
 
 on:
-  release:
-    types: [published]
+  workflow_run:
+    workflows: [JDTLS Milestone Release Checker]
+    types:
+      - completed
   workflow_dispatch:
     inputs:
       JDTLS_VERSION:
